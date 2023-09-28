@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 /**
  *
  * @author Tania
@@ -12,14 +17,6 @@ public class Estudiante {
         this.codigo = codigo;
         this.nombre = nombre;
         this.correo = correo;
-        this.semestre = semestre;
-    }
-
-    public int getSemestre() {
-        return semestre;
-    }
-
-    public void setSemestre(int semestre) {
         this.semestre = semestre;
     }
 
@@ -46,5 +43,13 @@ public class Estudiante {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-    
+
+    public int getSemestre() {
+        return semestre;
+    }
+
+    public void setSemestre(int semestre) {
+        this.semestre = semestre;
+    }
 }
+
