@@ -1,77 +1,95 @@
-import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
- 
+
 public class PruebaJFreeChart {
+    public static final int ANCHO_GRAFICA = 800;
+    public static final int ALTO_GRAFICA = 600;
 
-	private static Color COLOR_SERIE_1 = new Color(255, 128, 64);
+    public static void generarGraficoEdad() throws IOException {
+        String arch = "datosin.csv"; // Ruta y nombre del archivo CSV
+        File archiData = new File(arch);
 
-	private static Color COLOR_SERIE_2 = new Color(28, 84, 140);
+        XYSeriesCollection dataset = new XYSeriesCollection();
 
-	private static Color COLOR_RECUADROS_GRAFICA = new Color(31, 87, 4);
+        try {
+            Scanner leeArch = new Scanner(archiData);
+            String valor = null;
+            int sec = 1;
 
-	private static Color COLOR_FONDO_GRAFICA = Color.white;
+            while (leeArch.hasNextLine()) {
+                XYSeries serie = new XYSeries(sec == 1 ? "Edad y Casos por Edad" : valor);
+                sec = 1;
 
-	public JFreeChart crearGrafica(XYSeriesCollection dataset) {
+                while (leeArch.hasNextLine()) {
+                    valor = leeArch.nextLine();
+                    if (!isNumeric(valor)) {
+                        break;
+                    }
+                    serie.add(sec++, Double.parseDouble(valor));
+                }
 
-		final JFreeChart chart = ChartFactory.createXYLineChart("Casos-intoxicación-sustancias-Psicoactivas-Pereira", "Edad", "Casos(intoxicación)", 
-				dataset,
-				PlotOrientation.VERTICAL, 
-				true, // uso de leyenda
-				false, // uso de tooltips  
-				false // uso de urls
- 				);
-		// color de fondo de la gráfica
-		chart.setBackgroundPaint(COLOR_FONDO_GRAFICA);
+                dataset.addSeries(serie);
+            }
 
-		final XYPlot plot = (XYPlot) chart.getPlot();
-		configurarPlot(plot);
+            JFreeChart chart = ChartFactory.createXYLineChart(
+                    "Gráfico de Edad y Casos por Edad", "Edad", "Casos", dataset,
+                    PlotOrientation.VERTICAL, true, true, false);
 
-		final NumberAxis domainAxis = (NumberAxis)plot.getDomainAxis();
-		configurarDomainAxis(domainAxis);
+            ChartUtilities.saveChartAsPNG(new File("grafico_edad.png"), chart, ANCHO_GRAFICA, ALTO_GRAFICA);
+            System.out.println("Gráfico generado y guardado como 'grafico_edad.png'.");
 
-		final NumberAxis rangeAxis = (NumberAxis)plot.getRangeAxis();
-		configurarRangeAxis(rangeAxis);
+        } catch (FileNotFoundException ex) {
+            System.err.println("Error -> " + ex.getMessage());
+        }
+    }
 
-		final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)plot.getRenderer();
-		configurarRendered(renderer);
+    public static void generarGraficoSeguroSaludEstrato(String tipSS) throws IOException {
+        String arch = "datosin.csv"; // Ruta y nombre del archivo CSV
+        File archiData = new File(arch);
 
-		return chart;
-	}
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-	// configuramos el contenido del gráfico (damos un color a las líneas que sirven de guía)
-	private void configurarPlot (XYPlot plot) {
-		plot.setDomainGridlinePaint(COLOR_RECUADROS_GRAFICA);
-		plot.setRangeGridlinePaint(COLOR_RECUADROS_GRAFICA);
-	}
+        try {
+            Scanner leeArch = new Scanner(archiData);
 
-	// configuramos el eje X de la gráfica (se muestran números enteros y de uno en uno)
-	private void configurarDomainAxis (NumberAxis domainAxis) {
-		domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		domainAxis.setTickUnit(new NumberTickUnit(1));
-	}
+            while (leeArch.hasNextLine()) {
+                String linea = leeArch.nextLine();
+                String[] valores = linea.split(",");
 
-	// configuramos el eje y de la gráfica (números enteros de dos en dos y rango entre 120 y 135)
-	private void configurarRangeAxis (NumberAxis rangeAxis) {
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		rangeAxis.setTickUnit(new NumberTickUnit(2));
-		rangeAxis.setRange(120, 135);
-	}
+                if (valores.length >= 10) {
+                    String tipoSS = valores[8];
+                    if (tipoSS.equals(tipSS)) {
+                        String estrato = valores[10];
+                        dataset.addValue(1, estrato, tipSS);
+                    }
+                }
+            }
 
-	// configuramos las líneas de las series (añadimos un círculo en los puntos y asignamos el color de cada serie)
-	private void configurarRendered (XYLineAndShapeRenderer renderer) {
-		renderer.setSeriesShapesVisible(0, true);
-		renderer.setSeriesShapesVisible(1, true);
-		renderer.setSeriesPaint(0, COLOR_SERIE_1);
-		renderer.setSeriesPaint(1, COLOR_SERIE_2);
-	}
+            String titulo = "Gráfico de " + tipSS + " por Estrato";
+
+            JFreeChart chart = ChartFactory.createBarChart(
+                    titulo, "Estrato", "Cantidad de Personas", dataset,
+                    PlotOrientation.VERTICAL, true, true, false);
+
+            ChartUtilities.saveChartAsPNG(new File("grafico_" + tipSS + "_estrato.png"), chart, ANCHO_GRAFICA, ALTO_GRAFICA);
+            System.out.println("Gráfico generado y guardado como 'grafico_" + tipSS + "_estrato.png'.");
+
+        } catch (FileNotFoundException ex) {
+            System.err.println("Error -> " + ex.getMessage());
+        }
+    }
+
+    public static boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
 }
+
