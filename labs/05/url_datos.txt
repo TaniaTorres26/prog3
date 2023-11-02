@@ -1,3 +1,3 @@
-Casos positivos de COVID-19 en Colombia.
-https://www.datos.gov.co/Salud-y-Protecci-n-Social/Casos-positivos-de-COVID-19-en-Colombia-/gt2j-8ykr/data 
-ESTOS DATOS ESTAN FILTRADOS Y ORGANIZADOS EN UN ARCHIVO EXCEL PORQUE ERAN MUCHOS VAN DEL AÑO 2020 AL 2021 
+https://www.datos.gov.co/Salud-y-Protecci-n-Social/Edad-de-los-pacientes/me9u-mkrh
+Edad de los pacientes 
+Casos por intoxicación por sustancias Psicoactivas en la ciudad de Pereira.
