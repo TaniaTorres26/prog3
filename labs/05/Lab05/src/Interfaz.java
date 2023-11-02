@@ -140,7 +140,73 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int[] intoxicacionesPorEstratoTodos = entrada.intoxicacionesPorEstratoTodos();
+        int[] intoxicacionesPorEstratoEdad = entrada.intoxicacionesPorEstratoEdad();
+        int[] estratosGraficar = new int[6];
+        
+        boolean[] botones = new boolean[]{jRadioButton1.isSelected(),jRadioButton2.isSelected(),jRadioButton3.isSelected()};
+        
+        if(botones[0]&!botones[1]){
+            for(int i=0;i<6;i++){
+                estratosGraficar[i]=intoxicacionesPorEstratoTodos[i]-intoxicacionesPorEstratoEdad[i];
+            }
+        }
+        if(!botones[0]&botones[1]){
+            for(int i=0;i<6;i++){
+                estratosGraficar[i]=intoxicacionesPorEstratoEdad[i];
+            }
+        }
+        if(botones[0]==botones[1]||botones[2]){
+            for(int i=0;i<6;i++){
+                estratosGraficar[i]=intoxicacionesPorEstratoTodos[i];
+            }
+        }
+        
+        //Barras
+        DefaultCategoryDataset datos = new DefaultCategoryDataset();
 
+        datos.setValue(estratosGraficar[0], "1", "Estrato");
+        datos.setValue(estratosGraficar[1], "2", "Estrato");
+        datos.setValue(estratosGraficar[2], "3", "Estrato");
+        datos.setValue(estratosGraficar[3], "4", "Estrato");
+        datos.setValue(estratosGraficar[4], "5", "Estrato");
+        datos.setValue(estratosGraficar[5], "6", "Estrato");
+        
+        JFreeChart barras = ChartFactory.createBarChart("Intoxicaciones por estrato", "Estrato", "Intoxicaciones", datos, PlotOrientation.VERTICAL, true, true, false);
+        ChartPanel panel1 = new ChartPanel(barras);
+        panel1.setMouseWheelEnabled(true);
+
+        jPanel1.setLayout(new BorderLayout());
+        jPanel1.add(panel1, BorderLayout.NORTH);
+        pack();
+        repaint();
+        
+        //Pastel
+        float prueba=0;
+        for(int i=0;i<6;i++){
+            prueba+=estratosGraficar[i];
+        }
+        
+                
+        DefaultPieDataset datos1 = new DefaultPieDataset();
+
+        datos1.setValue("1 (" + (estratosGraficar[0] * 100) / prueba + "%)", estratosGraficar[0]);
+        datos1.setValue("2 (" + (estratosGraficar[1] * 100) / prueba + "%)", estratosGraficar[1]);
+        datos1.setValue("3 (" + (estratosGraficar[2] * 100) / prueba + "%)", estratosGraficar[2]);
+        datos1.setValue("4 (" + (estratosGraficar[3] * 100) / prueba + "%)", estratosGraficar[3]);
+        datos1.setValue("5 (" + (estratosGraficar[4] * 100) / prueba + "%)", estratosGraficar[4]);
+        datos1.setValue("6 (" + (estratosGraficar[5] * 100) / prueba + "%)", estratosGraficar[5]);
+        
+        JFreeChart pastel = ChartFactory.createPieChart("Intoxicaciones por estrato", datos1, true, true, false);
+
+        ChartPanel panel_temporal = new ChartPanel(pastel);
+        panel_temporal.setMouseWheelEnabled(true);
+
+        jPanel2.setLayout(new BorderLayout());
+        jPanel2.add(panel_temporal, BorderLayout.NORTH);
+
+        pack();
+        repaint();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
